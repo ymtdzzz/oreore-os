@@ -31,8 +31,23 @@ entry:
     MOV     SS,AX
     MOV     SP,0x7c00
     MOV     DS,AX
+; Load disk
+    MOV     AX,0x0820
     MOV     ES,AX
+    MOV     CH,0            ; Cylinder zero
+    MOV     DH,0            ; Head zero
+    MOV     CL,2            ; Sector two
 
+    MOV     AH,0x02         ; load disk
+    MOV     AL,1            ; sector one
+    MOV     BX,0
+    MOV     DL,0x00         ; A drive
+    INT     0x13            ; call disk BIOS
+    JC      error
+fin:
+    HLT                     ; Halt until something happens
+    JMP     fin
+error:
     MOV     SI,msg
 putloop:
     MOV     AL,[SI]
@@ -43,12 +58,9 @@ putloop:
     MOV     BX,15           ; Color code
     INT     0x10            ; Call video BIOS
     JMP     putloop
-fin:
-    HLT                     ; Halt until something happens
-    JMP     fin
 msg:
     DB      0x0a, 0x0a      ; Break lines
-    DB      "hello, world"
+    DB      "load error"
     DB      0x0a
     DB      0
 
