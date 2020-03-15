@@ -33,17 +33,26 @@ entry:
     MOV     DS,AX
 ; Load disk
     MOV     AX,0x0820
-    MOV     ES,AX
+    MOV     ES,AX           ; Buffer address
     MOV     CH,0            ; Cylinder zero
     MOV     DH,0            ; Head zero
     MOV     CL,2            ; Sector two
 
+    MOV     SI,0            ; Failure count
+retry:
     MOV     AH,0x02         ; load disk
     MOV     AL,1            ; sector one
     MOV     BX,0
     MOV     DL,0x00         ; A drive
     INT     0x13            ; call disk BIOS
-    JC      error
+    JNC     fin
+    ADD     SI,1            ; If error orrured, add 1 to failure count
+    CMP     SI,5
+    JAE     error
+    MOV     AH,0x00
+    MOV     DL,0x00
+    INT     0x13            ; reset drive
+    JMP     retry
 fin:
     HLT                     ; Halt until something happens
     JMP     fin
