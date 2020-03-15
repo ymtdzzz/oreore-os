@@ -1,6 +1,6 @@
 ; hello
 ; TAB=4
-
+    CYLS equ 10
     ORG     0x7c00
 
 ; For FAT-12
@@ -60,6 +60,14 @@ next:
     ADD     CL,1
     CMP     CL,18
     JBE     readloop
+    MOV     CL,1
+    ADD     DH,1
+    CMP     DH,2
+    JB      readloop        ; IF DH < 2
+    MOV     DH,0
+    ADD     CH,1
+    CMP     CH,CYLS
+    JB      readloop        ; IF CH < CYLS
 fin:
     HLT                     ; Halt until something happens
     JMP     fin
