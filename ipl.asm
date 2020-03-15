@@ -6,7 +6,6 @@
 ; For FAT-12
     JMP     entry
     DB      0x90
-
     DB      "HELLOIPL"      ; Boot sector name
     DW      512             ; Size of each sector
     DB      1               ; Cluster size
@@ -56,9 +55,3 @@ msg:
     RESB    0x1fe-($-$$)    ; Fill 0x00 to 0x001fe
 
     DB      0x55, 0xaa
-
-; Other than boot sector
-    DB      0xf0, 0xff, 0xff, 0x00, 0x00, 0x00, 0x00, 0x00
-    RESB    4600
-    DB      0xf0, 0xff, 0xff, 0x00, 0x00, 0x00, 0x00, 0x00
-    RESB    1469432
