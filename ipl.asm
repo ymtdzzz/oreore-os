@@ -37,7 +37,7 @@ entry:
     MOV     CH,0            ; Cylinder zero
     MOV     DH,0            ; Head zero
     MOV     CL,2            ; Sector two
-
+readloop:
     MOV     SI,0            ; Failure count
 retry:
     MOV     AH,0x02         ; load disk
@@ -45,7 +45,7 @@ retry:
     MOV     BX,0
     MOV     DL,0x00         ; A drive
     INT     0x13            ; call disk BIOS
-    JNC     fin
+    JNC     next
     ADD     SI,1            ; If error orrured, add 1 to failure count
     CMP     SI,5
     JAE     error
@@ -53,6 +53,13 @@ retry:
     MOV     DL,0x00
     INT     0x13            ; reset drive
     JMP     retry
+next:
+    MOV     AX,ES           ; move forward address by 0x200
+    ADD     AX,0x0020
+    MOV     ES,AX
+    ADD     CL,1
+    CMP     CL,18
+    JBE     readloop
 fin:
     HLT                     ; Halt until something happens
     JMP     fin
