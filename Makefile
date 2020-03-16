@@ -1,8 +1,17 @@
 nasmhead.bin: nasmhead.asm
 	nasm -o nasmhead.bin nasmhead.asm
 
-os.sys: nasmhead.bin
-	cat nasmhead.bin > os.sys
+nasmfunc.o: nasmfunc.asm
+	nasm -f elf32 -o nasmfunc.o nasmfunc.asm
+
+bootpack.o: bootpack.c
+	gcc -c -m32 -fno-pic -o bootpack.o bootpack.c
+
+bootpack.bin: bootpack.o nasmfunc.o
+	ld -m elf_i386 -e HariMain -o bootpack.bin -Tos.ls bootpack.o nasmfunc.o
+
+os.sys: nasmhead.bin bootpack.bin
+	cat nasmhead.bin bootpack.bin > os.sys
 
 ipl.bin: ipl.asm
 	nasm -o ipl.bin ipl.asm
@@ -19,3 +28,6 @@ clean:
 	rm -f *.o
 	rm -f *.sys
 	rm -f *.img
+
+debug: 
+	qemu-system-i386 -m 32 -localtime -vga std -fda os.img -gdb tcp::10000 -S &

@@ -32,7 +32,7 @@
     MOV     AL,0xff
     OUT     0x21,AL
     NOP
-    OUT     0xa1
+    OUT     0xa1,AL
 
     CLI
 
@@ -47,7 +47,7 @@
 
 ; enable protect mode
 
-[INSTRSET "i486p"]
+;[INSTRSET "i486p"]
 
     LGDT    [GDTR0]
     MOV     EAX,CR0
